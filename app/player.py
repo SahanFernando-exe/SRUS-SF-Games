@@ -4,7 +4,7 @@ class Player:
         self._name = name
 
     def __str__(self):
-        return f"location: {id(self)}\nuid: {self._uid}\nname: {self._name}"
+        return f"location: {id(self)}, uid: {self._uid}, name: {self._name}"
 
     @property
     def uid(self):
