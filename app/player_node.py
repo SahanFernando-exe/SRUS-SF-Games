@@ -1,3 +1,4 @@
+
 class PlayerNode:
     def __init__(self, player):
         self._player = player
@@ -5,7 +6,12 @@ class PlayerNode:
         self._next = None
 
     def __str__(self):
-        return f"location: {id(self)}\nplayer: {self._player}\nprevious: {self._previous}\nnext: {self._next}"
+        return (
+        f"location: {id(self)}\n"
+        f"  player: {self.player}\n"
+        f"  previous: {self._previous.player if self._previous else 'None'}\n"
+        f"  next: {self._next.player if self._next else 'None'}"
+    )
 
     @property
     def key(self):
@@ -18,12 +24,17 @@ class PlayerNode:
     @property
     def previous(self):
         return self._previous
+    
+    @previous.setter
+    def previous(self, playernode: 'PlayerNode'):
+        self._previous = playernode
+        playernode._next = self
 
     @property
     def next(self):
         return self._next
 
     @next.setter
-    def next(self, playernode):
-        self._next = playernode.player
-        playernode._previous = self._player
+    def next(self, playernode: 'PlayerNode'):
+        self._next = playernode
+        playernode._previous = self
