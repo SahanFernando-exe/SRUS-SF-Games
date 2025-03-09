@@ -1,10 +1,15 @@
 from app.player_node import PlayerNode
+from app.player import Player
 
 class PlayerList:
     def __init__(self, *player_nodes: PlayerNode):
+        ids = []
         for node in player_nodes:
             if not isinstance(node, PlayerNode):
                 raise TypeError(f"Expected PlayerNode, got {type(node).__name__}")
+            if node.key in ids:
+                raise KeyError(f'duplicate key in parsed nodes; key: {node.key}')
+            ids.append(node.key)
         self._head = None
         self._tail = None
         if player_nodes:
@@ -15,6 +20,16 @@ class PlayerList:
             if node:
                 node.next = i
             node = i
+
+    def __str__(self):
+        text = ""
+        node = self._head
+        while True:
+            if node is None:
+                return text
+            text += node.__str__()
+            node = node.next
+
 
 
     @property
@@ -51,7 +66,26 @@ class PlayerList:
         '''
         node = self.get_node_at(index)
         node._player = player
-    
+
+    def remove_at(self, index):
+        node = self.get_node_at(index)
+        if node.next:
+            node.next.previous = node.previous
+        elif node.previous:
+            node.previous.next = node.next
+
+    def remove_by_key(self, key: str):
+        node = self._head
+        while True:
+            if node.key == key:
+                if node.next:
+                    node.next.previous = node.previous
+                elif node.previous:
+                    node.previous.next = node.next
+                return
+            if not node.next:
+                raise KeyError(f'key {key} not found at {node}')
+            node = node.next
 
     def squeeze_behind(self, player_node_to_add, reference_player_node):
         '''
@@ -76,11 +110,15 @@ class PlayerList:
         if index < 0:
             node = self._tail
             for i in range(abs(index)-1):
-                node = node.next
+                node = node.previous
+                if node is None:
+                    raise IndexError("Index out of range")
             return node
         node = self._head
         for i in range(index):
             node = node.next
+            if node is None:
+                raise IndexError("Index out of range")
         return node
         
         

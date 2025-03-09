@@ -29,6 +29,9 @@ class TestPlayerList(unittest.TestCase):
         with self.assertRaises(TypeError):
             PlayerList("something")
 
+        with self.assertRaises(KeyError):
+            PlayerList(self.nodes[2], self.nodes[2])
+
     def test_is_empty(self):
         self.empty_player_list = PlayerList()
         self.prefilled_player_list = PlayerList(self.nodes[2], self.nodes[4])
@@ -54,6 +57,19 @@ class TestPlayerList(unittest.TestCase):
         self.player_list.prepend(self.nodes[3])
         self.assertIs(self.player_list._head, self.nodes[3])
 
+    def test_remove_at(self):
+        self.player_list = PlayerList(self.nodes[2], self.nodes[4], self.nodes[7])
+        self.player_list.remove_at(1)
+        self.assertEqual(print(self.player_list), print(PlayerList(self.nodes[2], self.nodes[7])))
+
+        self.player_list = PlayerList(self.nodes[2], self.nodes[4], self.nodes[7])
+        self.player_list.remove_at(-2)
+        self.assertEqual(print(self.player_list), print(PlayerList(self.nodes[2], self.nodes[7])))
+
+    def test_remove_by_key(self):
+        self.player_list = PlayerList(self.nodes[2], self.nodes[4], self.nodes[7])
+        self.player_list.remove_by_key("4")
+        self.assertEqual(print(self.player_list), print(PlayerList(self.nodes[2], self.nodes[7])))
 
 if __name__ == '__main__':
     unittest.main()
