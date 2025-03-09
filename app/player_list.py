@@ -1,12 +1,17 @@
+from app.player_node import PlayerNode
+
 class PlayerList:
-    def __init__(self, *player_node):
+    def __init__(self, *player_nodes: PlayerNode):
+        for node in player_nodes:
+            if not isinstance(node, PlayerNode):
+                raise TypeError(f"Expected PlayerNode, got {type(node).__name__}")
         self._head = None
         self._tail = None
-        if player_node:
-            self._head = player_node[0]
-            self._tail = player_node[-1]
+        if player_nodes:
+            self._head = player_nodes[0]
+            self._tail = player_nodes[-1]
         node = None
-        for i in player_node:
+        for i in player_nodes:
             if node:
                 node.next = i
             node = i
@@ -27,6 +32,7 @@ class PlayerList:
         self._tail.next = player_node
         self._tail = player_node
     
+
     def prepend(self, player_node):
         '''
         adds a player node to the start of the list
@@ -38,21 +44,22 @@ class PlayerList:
         player_node.next = self._head
         self._head = player_node
     
-    def insert_at(self, player_node, index):
+
+    def replace_at(self, player, index):
         '''
-        adds a player node to the the specified index of the list (list starts index 0)
+        adds a player node to the specified index of the list (list starts index 0)
         '''
-        next = self.get_node_at(index)
-        previous = next.previous
-        player_node.next = next
-        player_node.previous = previous
+        node = self.get_node_at(index)
+        node._player = player
     
+
     def squeeze_behind(self, player_node_to_add, reference_player_node):
         '''
         *unimplemented
         adds a player node behind the specified playernode (closer to the tail)
         '''
         pass
+
 
     def squeeze_infront(self, player_node_to_add, reference_player_node):
         '''
@@ -61,14 +68,21 @@ class PlayerList:
         '''
         pass
 
-    def get_node_at(self, index):
+
+    def get_node_at(self, index: int):
         '''
         returns the node at specified index
         '''
+        if index < 0:
+            node = self._tail
+            for i in range(abs(index)-1):
+                node = node.next
+            return node
         node = self._head
         for i in range(index):
             node = node.next
         return node
+        
         
     def get_index_of(self, player_node):
         '''

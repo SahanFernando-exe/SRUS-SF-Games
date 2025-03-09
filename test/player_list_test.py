@@ -5,22 +5,55 @@ import unittest
 
 class TestPlayerList(unittest.TestCase):
     def setUp(self):
-        self.p1 = PlayerNode(Player(2,"1sdgs"))
-        self.p2 = PlayerNode(Player(3,"2sdgs"))
-        self.p3 = PlayerNode(Player(4,"3sdgs"))
-        self.p4 = PlayerNode(Player(5,"4sdgs"))
-        
+        players = []
+        for i in range(10):
+            players.append(Player(i, f"player_{i}"))
+        nodes = []
+        for player in players:
+            nodes.append(PlayerNode(player))
+        self.nodes = nodes
+
+    def test_init(self):
+        self.player_list = PlayerList()
+        self.assertIsInstance(self.player_list, PlayerList)
+
+        self.player_list = PlayerList(self.nodes[2])
+        self.assertIsInstance(self.player_list, PlayerList)
+
+        self.player_list = PlayerList(self.nodes[2], self.nodes[5])
+        self.assertIsInstance(self.player_list, PlayerList)
+
+        with self.assertRaises(TypeError):
+            PlayerList(23)
+
+        with self.assertRaises(TypeError):
+            PlayerList("something")
+
+    def test_is_empty(self):
+        self.empty_player_list = PlayerList()
+        self.prefilled_player_list = PlayerList(self.nodes[2], self.nodes[4])
+
+        self.assertEqual(self.empty_player_list.is_empty, True)
+        self.assertEqual(self.prefilled_player_list.is_empty, False)
+
     def test_append(self):
-        self.player_list = PlayerList(self.p1, self.p2, self.p3)
-        print(self.player_list)
-        self.assertEqual(self.player_list, 3)
+        self.player_list = PlayerList()
+        self.player_list.append(self.nodes[3])
+        self.assertIs(self.player_list._tail, self.nodes[3])
 
-    def test_name(self):
-        self.assertEqual(self.player.name, "Jeff")
+        self.player_list = PlayerList(self.nodes[2], self.nodes[4])
+        self.player_list.append(self.nodes[3])
+        self.assertIs(self.player_list._tail, self.nodes[3])
+    
+    def test_prepend(self):
+        self.player_list = PlayerList()
+        self.player_list.prepend(self.nodes[3])
+        self.assertIs(self.player_list._head, self.nodes[3])
 
-    def test_change_error(self):
-        with self.assertRaises(AttributeError):
-            self.player.name = "Jack"
+        self.player_list = PlayerList(self.nodes[2], self.nodes[4])
+        self.player_list.prepend(self.nodes[3])
+        self.assertIs(self.player_list._head, self.nodes[3])
+
 
 if __name__ == '__main__':
     unittest.main()
