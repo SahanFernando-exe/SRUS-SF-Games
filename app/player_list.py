@@ -30,7 +30,19 @@ class PlayerList:
             text += node.__str__()
             node = node.next
 
-
+    def display(self, forward=True):
+        text = "\nPlayerList{\n"
+        node = self._head
+        if not forward:
+            node = self._tail
+        while True:
+            if node is None:
+                return text + "}"
+            text += node.display()
+            if forward:
+                node = node.next
+            else:
+                node = node.previous
 
     @property
     def is_empty(self):

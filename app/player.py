@@ -6,6 +6,9 @@ class Player:
     def __str__(self):
         return f"location: {id(self)}, uid: {self._uid}, name: {self._name}"
 
+    def display(self):
+        return f"Player '{self._uid}': {self._name}"
+
     @property
     def uid(self):
         return self._uid

@@ -13,6 +13,14 @@ class PlayerNode:
         f"  next: {self._next.player if self._next else 'None'}"
     )
 
+    def display(self):
+        return (
+        f"PlayerNode '{self.key}':\n"
+        f"  previous: {self._previous.player.display() if self._previous else 'None'}\n"
+        f"  player: {self.player.display()}\n"
+        f"  next: {self._next.player.display() if self._next else 'None'}\n"
+        )
+
     @property
     def key(self):
         return self._player.uid
