@@ -21,6 +21,12 @@ class PlayerList:
                 node.next = i
             node = i
 
+    def __iter__(self):
+        current = self._head
+        while current:
+            yield current.player
+            current = current.next
+
     def __str__(self):
         text = ""
         node = self._head
