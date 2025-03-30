@@ -102,7 +102,7 @@ class PlayerList:
                     node.previous.next = node.next
                 return
             if not node.next:
-                raise KeyError(f'key {key} not found at {node}')
+                raise KeyError(f"key {key} not found at {node}")
             node = node.next
 
     def squeeze_behind(self, player_node_to_add, reference_player_node):

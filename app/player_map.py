@@ -22,25 +22,29 @@ class PlayerMap:
             elif isinstance(bucket, PlayerList):
                 string += f"PlayerList: "
                 for player in bucket:
-                    string += f"{player.__str__()}, "
+                    string += f"{player}, "
                 string = string[:-2]
             else:
                 print(type(bucket))
                 raise TypeError
         return string
 
-    @property
-    def size(self):
+    def __len__(self):
         return self._item_count
+
+    @property
+    def distribution(self):
+        count = 0
+        for bucket in self.map:
+            if bucket is None:
+                count += 1
+        return (self._bucket_count - count)/self._bucket_count
 
     def hash_func(self, key):
         key = str(key)
-        hash_val = 0
-        for i, char in enumerate(key):
-            binary_str = format(ord(char), '08b')
-            binary_int = int(binary_str) * (10**i)
-            hash_val += binary_int
-        hash_val += int(sum(int(x)*i for i, x in enumerate(str(hash_val))))
+        hash_val = 5381  # DJB2 initial value
+        for char in key:
+            hash_val = (hash_val * 33) + ord(char)
         return hash_val
 
     def resize(self):
@@ -60,37 +64,21 @@ class PlayerMap:
             else:
                 raise TypeError
         self.map = nmap.map
-        '''
-        new_map = [None] * self._bucket_count
-        for bucket in self.map:
-            if isinstance(bucket, Player):
-                index = self.hash_func(bucket.uid) % self._bucket_count
-                if new_map[index] is None:
-                    new_map[index] = bucket
-                elif isinstance(new_map[index], Player):
-                    new_map[index] = [bucket]
-                elif isinstance(new_map[index], PlayerList):
-                    pass
-                else:
-                    new_map[index].append(bucket)
 
-            elif isinstance(bucket, PlayerList):
-                for player in bucket:
-                    index = self.hash_func(player.uid) % self._bucket_count
-                    if new_map[index] is None:
-                        new_map[index] = [player]
-                    else:
-                        new_map[index].append(player)
-        self.map = new_map
-        '''
-
-    def retrieve(self, key):
+    def __getitem__(self, key):
         index = self.hash_func(key) % self._bucket_count
         if self.map[index] is None:
-            raise KeyError(f'Key {key} does not exist in map')
-        for player in self.map[index]:
-            if player.uid == key:
-                return player
+            pass
+        elif isinstance(self.map[index], Player):
+            if self.map[index].uid == key:
+                return self.map[index]
+        elif isinstance(self.map[index], PlayerList):
+            for player in self.map[index]:
+                if player.uid == key:
+                    return player
+        else:
+            raise TypeError
+        raise KeyError(f'Key {key} does not exist in map')
 
     def add(self, player: Player):
         index = self.hash_func(player.uid) % self._bucket_count
@@ -106,7 +94,7 @@ class PlayerMap:
                 if iter_player.uid == player.uid:
                     raise KeyError(f'Key {player.uid} already exists in map')
             #add into playerlist
-            self.map[index].append(player)
+            self.map[index].append(PlayerNode(player))
         else:
             raise TypeError
 
@@ -114,27 +102,34 @@ class PlayerMap:
         if self._item_count/self._bucket_count > self._load_factor:
             self.resize()
 
-    def remove(self, key):
+    def __delitem__(self, key):
         index = self.hash_func(key) % self._bucket_count
 
-        if self.map[index] is not None:
-            for i, player in enumerate(self.map[index]):
-                if player.uid == key:
-                    self.map[index].pop(i)
-                    if len(self.map[index]) == 0:
-                        self.map[index] = None
-                    self._item_count -= 1
-                    if self._item_count / (self._bucket_count/2) < self._load_factor:
-                        self.resize()
-                    return
-        raise KeyError(f'Key {key} does not exist in map')
+        if self.map[index] is None:
+            raise KeyError(f'Key {key} does not exist in map')
+
+        elif isinstance(self.map[index], Player):
+            if self.map[index].uid == key:
+                self.map[index] = None
+            else:
+                raise KeyError(f'Key {key} does not exist in map')
+
+        elif isinstance(self.map[index], PlayerList):
+            self.map[index].remove_by_key(key)
+
+        else:
+            raise TypeError
+
+        self._item_count -= 1
+        if self._item_count / (self._bucket_count / 2) < self._load_factor:
+            self.resize()
 
 
 
 
 players = []
-for i in range(10):
-    players.append(Player(uid=f"player_{i}", name=f"player_{i}"))
+for i in range(180):
+    players.append(Player(uid=f"{i}", name=f"player_{i}"))
 
 q = Player(uid=f"ab", name=f"player")
 w = Player(uid=f"b", name=f"player")
@@ -143,14 +138,13 @@ r = Player(uid=f"aa", name=f"player")
 
 
 a = PlayerMap(size = 1)
-for i in players:
-    print(a)
+for x, i in enumerate(players):
     a.add(i)
+
 a.add(q)
 a.add(w)
+a.add(e)
 a.add(r)
 print(a)
-a.remove("aa")
-a.remove("b")
-print(a)
-a.retrieve("ab")
+print(a["ax"])
+print(a.distribution)
