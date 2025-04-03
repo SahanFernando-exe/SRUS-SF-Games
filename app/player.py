@@ -16,3 +16,17 @@ class Player:
     @property
     def name(self):
         return self._name
+    
+    @classmethod
+    def hash(cls, key: str) -> int:
+        key = str(key)
+        hash_val = 5381  # DJB2 initial value
+        for char in key:
+            hash_val = (hash_val * 33) + ord(char)
+        return hash_val
+    
+    def __hash__(self):
+        return self.hash(self.uid)
+
+    def __eq__(self, other):
+        return self.uid == other.uid

@@ -29,6 +29,9 @@ class PlayerMap:
                 raise TypeError
         return string
 
+    def display(self):
+        return self.__str__()
+
     def __len__(self):
         return self._item_count
 
@@ -40,33 +43,26 @@ class PlayerMap:
                 count += 1
         return (self._bucket_count - count)/self._bucket_count
 
-    def hash_func(self, key):
-        key = str(key)
-        hash_val = 5381  # DJB2 initial value
-        for char in key:
-            hash_val = (hash_val * 33) + ord(char)
-        return hash_val
-
     def resize(self):
         self._bucket_count = 2**math.ceil(math.log2((1/self._load_factor)*self._item_count))
-        nmap = PlayerMap(load_factor = self._load_factor)
-        nmap._bucket_count = self._bucket_count
-        nmap.map = [None] * self._bucket_count
+        new_map = PlayerMap(load_factor = self._load_factor)
+        new_map._bucket_count = self._bucket_count
+        new_map.map = [None] * self._bucket_count
 
         for bucket in self.map:
             if bucket is None:
                 continue
             elif isinstance(bucket, Player):
-                nmap.add(bucket)
+                new_map.add(bucket)
             elif isinstance(bucket, PlayerList):
                 for player in bucket:
-                    nmap.add(player)
+                    new_map.add(player)
             else:
                 raise TypeError
-        self.map = nmap.map
+        self.map = new_map.map
 
     def __getitem__(self, key):
-        index = self.hash_func(key) % self._bucket_count
+        index = Player.hash(key) % self._bucket_count
         if self.map[index] is None:
             pass
         elif isinstance(self.map[index], Player):
@@ -81,7 +77,7 @@ class PlayerMap:
         raise KeyError(f'Key {key} does not exist in map')
 
     def add(self, player: Player):
-        index = self.hash_func(player.uid) % self._bucket_count
+        index = hash(player) % self._bucket_count
         if self.map[index] is None:
             self.map[index] = player
         elif isinstance(self.map[index], Player):
@@ -103,7 +99,7 @@ class PlayerMap:
             self.resize()
 
     def __delitem__(self, key):
-        index = self.hash_func(key) % self._bucket_count
+        index = Player.hash(key) % self._bucket_count
 
         if self.map[index] is None:
             raise KeyError(f'Key {key} does not exist in map')
@@ -123,28 +119,3 @@ class PlayerMap:
         self._item_count -= 1
         if self._item_count / (self._bucket_count / 2) < self._load_factor:
             self.resize()
-
-
-
-
-players = []
-for i in range(180):
-    players.append(Player(uid=f"{i}", name=f"player_{i}"))
-
-q = Player(uid=f"ab", name=f"player")
-w = Player(uid=f"b", name=f"player")
-e = Player(uid=f"ax", name=f"player")
-r = Player(uid=f"aa", name=f"player")
-
-
-a = PlayerMap(size = 1)
-for x, i in enumerate(players):
-    a.add(i)
-
-a.add(q)
-a.add(w)
-a.add(e)
-a.add(r)
-print(a)
-print(a["ax"])
-print(a.distribution)
