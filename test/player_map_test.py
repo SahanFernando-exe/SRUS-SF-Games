@@ -5,42 +5,30 @@ import unittest
 class TestPlayerList(unittest.TestCase):
     def setUp(self):
         players = []
-        for i in range(180):
+        for i in range(1000):
             players.append(Player(uid=f"{i}", name=f"player_{i}"))
-        hm = PlayerMap()
+        self.playermap = PlayerMap()
         for player in players:
-            hm.add(player)
-
-        q = Player(uid=f"ab", name=f"player")
-        w = Player(uid=f"b", name=f"player")
-        e = Player(uid=f"ax", name=f"player")
-        r = Player(uid=f"aa", name=f"player")
-        hm.add(q)
-        hm.add(w)
-        hm.add(e)
-        hm.add(r)
-        print(hm)
-        print(hm["ax"])
-
+            self.playermap.add(player)
 
     def test_init(self):
-        pass
+        playermap = PlayerMap()
+        self.assertIsInstance(playermap, PlayerMap)
 
     def test_get(self):
-        pass
+        self.assertEqual(self.playermap["5"].name, "player_5")
 
     def test_add(self):
-        pass
+        self.assertEqual(len(self.playermap), 1000)
+        self.playermap.add(Player(uid="add", name="new_player"))
+        self.assertEqual(len(self.playermap), 1001)
 
     def test_remove(self):
-        pass
-
-    def test_edit(self):
-        pass
-
-    def test_resize(self):
-        pass
-
+        self.assertEqual(len(self.playermap), 1000)
+        del self.playermap["8"]
+        self.assertEqual(len(self.playermap), 999)
+        with self.assertRaises(KeyError):
+            self.playermap["8"]
 
 if __name__ == '__main__':
     unittest.main()
