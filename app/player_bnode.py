@@ -18,14 +18,16 @@ class PlayerBNode:
     
     @lesser.setter
     def lesser(self, playernode):
-        if playernode is None or isinstance(playernode, PlayerBNode):
-            self._lesser = playernode
-    
+        if playernode is not None and not isinstance(playernode, PlayerBNode):
+            raise TypeError
+        self._lesser = playernode
+        
     @property
     def greater(self):
         return self._greater
     
     @greater.setter
     def greater(self, playernode):
-        if playernode is None or isinstance(playernode, PlayerBNode):
-            self._greater = playernode
+        if playernode is not None and not isinstance(playernode, PlayerBNode):
+            raise TypeError
+        self._greater = playernode
