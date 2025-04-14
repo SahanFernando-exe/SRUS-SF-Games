@@ -7,6 +7,7 @@ class PlayerBNode:
         self._player = player
         self._lesser = None
         self._greater = None
+        self._parent = None
     
     @property
     def player(self):
@@ -27,6 +28,8 @@ class PlayerBNode:
         if playernode is not None and not isinstance(playernode, PlayerBNode):
             raise TypeError
         self._lesser = playernode
+        if playernode:
+            playernode._parent = self
         
     @property
     def greater(self):
@@ -37,3 +40,9 @@ class PlayerBNode:
         if playernode is not None and not isinstance(playernode, PlayerBNode):
             raise TypeError
         self._greater = playernode
+        if playernode:
+            playernode._parent = self
+
+    @property
+    def parent(self):
+        return self._parent

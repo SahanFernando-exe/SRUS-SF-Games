@@ -5,6 +5,30 @@ class PlayerBST:
     def __init__(self):
         self._root = None
 
+    def display(self, pnode=0, indent=0):
+        if pnode == 0:
+            node = self._root
+        else:
+            node = pnode
+        if node is None:
+            return "empty"
+        name = node.player.name
+        nlen = len(name)
+        ind = indent + nlen
+
+        greater = ''
+        lesser = None
+        if node.greater:
+            greater = '\033[1;93m - greater: \033[1;97m' + self.display(pnode = node.greater, indent=ind + len(' - greater: '))
+        if node.lesser:
+            lesser = '\033[1;93m └ lesser: \033[1;97m' + self.display(pnode = node.lesser, indent=ind + len(' - lesser: '))
+        if lesser:
+            return f"{name}{greater}\n{' '*ind}{lesser}"
+        return f"{name}{greater}"
+
+
+
+
     @property
     def root(self):
         return self._root
@@ -54,3 +78,53 @@ class PlayerBST:
             curr_node = curr_node.lesser
     #    print(f"researching {curr_node.player.name} for {name}")
         return self.search(name, node=curr_node)
+
+    def rebalance(self):
+        players = []
+        # add lessers, then self, then greaters.
+        least_node = self.root
+        while True:
+            if least_node.lesser is None:
+                #append current least
+                players.append(least_node.player)
+                #rearrange
+                if least_node is self.root:
+                    if least_node.greater:
+                        self._root = least_node.greater
+                        least_node = self.root
+                        continue
+                    self._root = None
+                    break
+                if least_node.greater:
+                    parent_node = least_node.parent
+                    parent_node.lesser = least_node.greater
+                    least_node = parent_node.lesser
+                    continue
+                else:
+                    parent_node = least_node.parent
+                    parent_node.lesser = None
+                    least_node = parent_node
+                    continue
+            least_node = least_node.lesser
+        #sorted players
+
+        def resort(arr):
+        #    print(arr)
+            if len(arr) == 1:
+                return arr
+            if not arr:
+                return []
+            median = len(arr) // 2
+            left = arr[:median]
+            right = arr[median + 1:]
+            median = arr[median]
+        #    print(median, left, right)
+            ls = [median]
+            ls.extend(resort(left))
+            ls.extend(resort(right))
+            return ls
+
+
+        for i in resort(players):
+        #    print(i.name)
+            self.insert(i)

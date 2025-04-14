@@ -20,7 +20,9 @@ class TestPlayerList(unittest.TestCase):
         self.player_bst.insert(self.players[7])
         self.player_bst.insert(self.players[6])
         self.player_bst.insert(self.players[8])
+        self.player_bst.insert(self.players[9])
         self.player_bst.insert(self.players[2])
+        self.player_bst.insert(self.players[4])
         new_player = Player(6, "player_5")
         self.player_bst.insert(new_player)
         self.assertEqual(self.player_bst.root.player.name, "player_3")
@@ -31,6 +33,11 @@ class TestPlayerList(unittest.TestCase):
         self.assertEqual(self.player_bst.root.greater.greater.player.name, "player_7")
         self.assertEqual(self.player_bst.root.greater.greater.lesser.player.name, "player_6")
         self.assertEqual(self.player_bst.root.greater.greater.greater.player.name, "player_8")
+        self.assertEqual(self.player_bst.root.greater.greater.lesser.parent.player.name, "player_7")
+        print()
+        print(self.player_bst.display())
+        self.player_bst.rebalance()
+        print(self.player_bst.display())
 
     def test_search(self):
         self.player_bst.insert(self.players[3])
