@@ -32,7 +32,18 @@ class TestPlayerList(unittest.TestCase):
         self.assertEqual(self.player_bst.root.greater.greater.lesser.player.name, "player_6")
         self.assertEqual(self.player_bst.root.greater.greater.greater.player.name, "player_8")
 
-
+    def test_search(self):
+        self.player_bst.insert(self.players[3])
+        self.player_bst.insert(self.players[5])
+        self.player_bst.insert(self.players[1])
+        self.player_bst.insert(self.players[7])
+        self.player_bst.insert(self.players[6])
+        self.player_bst.insert(self.players[8])
+        self.player_bst.insert(self.players[2])
+        new_player = Player(6, "player_5")
+        self.player_bst.insert(new_player)
+        self.assertEqual(self.player_bst.search("player_5").uid, "6")
+        self.assertEqual(self.player_bst.search("player_7").uid, "7")
 
 if __name__ == '__main__':
     unittest.main()

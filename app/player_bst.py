@@ -29,12 +29,28 @@ class PlayerBST:
                 curr_node.greater = new_node
                 return
             self.insert(player, node=curr_node.greater)
-        
         elif player.name < curr_node.player.name:
             if curr_node.lesser is None:
                 curr_node.lesser = new_node
                 return
             self.insert(player, node=curr_node.lesser)
-
         elif player.name == curr_node.player.name:
             curr_node.player = player
+
+    def search(self, name: str, node:PlayerBNode = None):
+        curr_node = self.root
+        if node:
+            curr_node = node
+
+        if curr_node is None:
+            return None
+    #    print(f"checking {name} against {curr_node.player.name}")
+        if name == curr_node.player.name:
+    #        print(f"found {curr_node.player.name}")
+            return curr_node.player
+        elif name > curr_node.player.name:
+            curr_node = curr_node.greater
+        elif name < curr_node.player.name:
+            curr_node = curr_node.lesser
+    #    print(f"researching {curr_node.player.name} for {name}")
+        return self.search(name, node=curr_node)
