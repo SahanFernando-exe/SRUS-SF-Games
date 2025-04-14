@@ -11,6 +11,12 @@ class PlayerBNode:
     @property
     def player(self):
         return self._player
+
+    @player.setter
+    def player(self, player: Player):
+        if player is not None and not isinstance(player, Player):
+            raise TypeError
+        self._player = player
     
     @property
     def lesser(self):
